@@ -63,6 +63,7 @@ import {
 } from "vee-validate";
 
 import instance from "@/services/api.js";
+import Cookie from "js-cookie";
 
 setInteractionMode("eager");
 
@@ -105,7 +106,11 @@ export default {
 
       if (valid) {
         instance
-          .post("account/withdraw-balance", JSON.stringify(this.params))
+          .post("account/withdraw-balance", JSON.stringify(this.params), {
+            headers: {
+              Authorization: "Bearer " + Cookie.get("_capg-bank_token"),
+            },
+          })
           .then((response) => {
             if (response.data.newBalance) {
               this.$toasted.success(response.data.message);

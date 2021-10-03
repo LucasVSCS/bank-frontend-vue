@@ -90,7 +90,6 @@ import {
 } from "vee-validate";
 
 import instance from "@/services/api.js";
-
 import Cookie from "js-cookie";
 
 setInteractionMode("eager");
@@ -106,6 +105,11 @@ extend("email", {
 });
 
 export default {
+  beforeCreate() {
+    if (Cookie.get("_capg-bank_token")) {
+      this.$router.push("/");
+    }
+  },
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -131,17 +135,19 @@ export default {
           .post("auth/login", JSON.stringify(this.params))
           .then((response) => {
             if (response.data.access_token) {
-              Cookie.set("_capg-bank_token", response.data.access_token);
-              this.clear();
+              this.setupCookie(response.data.access_token);
+              setTimeout(() => {
+                this.$router.push("/");
+              }, 500);
             } else {
-              console.log("Credenciais inválidas");
+              this.$toasted.error("Credenciais inválidas");
             }
           });
       }
     },
-    clear() {
-      this.email = "";
-      this.password = null;
+    setupCookie(accessToken) {
+      Cookie.set("_capg-bank_token", accessToken);
+      this.$toasted.success("Usuário autenticado com sucesso");
       this.$refs.observer.reset();
     },
   },

@@ -5,6 +5,7 @@ import Login from '../views/Login.vue'
 import WithdrawBalance from '../components/WithdrawBalance.vue'
 import DepositBalance from '../components/DepositBalance.vue'
 import Transactions from '../components/Transactions.vue'
+import Guard from '../services/middleware.js'
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,7 @@ const routes = [
     name: 'Home',
     component: Home,
     props: true,
+    beforeEnter: Guard.auth,
     children: [
       {
         path: '/',

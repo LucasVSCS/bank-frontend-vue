@@ -17,13 +17,25 @@
         </v-tab>
       </v-tabs>
 
-      <v-img
-        src="@/assets/logo-icon.png"
-        alt="Capg-bank logo"
-        contain
-        width="60"
-        height="32"
-      />
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on">
+            Menu
+            <v-img
+              src="@/assets/logo-icon.png"
+              alt="Capg-bank logo"
+              contain
+              width="60"
+              height="32"
+            />
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item link v-on:click="loggof()">
+            <v-list-item-title>Fazer logoff</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-main class="grey lighten-3">
@@ -31,14 +43,13 @@
         <v-row>
           <v-col cols="12" sm="8">
             <router-view
-              v-if="isMounted"
               @updateBalance="updateBalance"
               @updateTransactionsHistory="updateTransactionsHistory"
               :transactions="this.transactionsData"
             />
           </v-col>
           <v-col cols="12" sm="4">
-            <Balance :balance="this.accountData.current_balance" />
+            <Balance :balance="this.accountData.current_balance || 0" />
           </v-col>
         </v-row>
       </v-container>
@@ -49,11 +60,11 @@
 <script>
 import Balance from "@/components/Balance";
 import instance from "@/services/api.js";
+import Cookie from "js-cookie";
 
 export default {
   data: () => ({
     activeTab: "/transactions",
-    isMounted: false,
     links: [
       {
         page: "Página principal",
@@ -72,16 +83,19 @@ export default {
     accountData: {},
     transactionsData: {},
   }),
-  created() {
-    this.getUserData();
-  },
   methods: {
     getUserData() {
-      instance.post("user/user-account").then((response) => {
-        this.transactionsData = response.data.accountTransactions;
-        this.userData = response.data.userData;
-        this.accountData = response.data.userAccount;
-      });
+      instance
+        .post("user/user-account", null, {
+          headers: {
+            Authorization: "Bearer " + Cookie.get("_capg-bank_token"),
+          },
+        })
+        .then((response) => {
+          this.transactionsData = response.data.accountTransactions;
+          this.userData = response.data.userData;
+          this.accountData = response.data.userAccount;
+        });
     },
     updateBalance(newBalance) {
       this.accountData.current_balance = newBalance;
@@ -89,12 +103,16 @@ export default {
     updateTransactionsHistory(newTransaction) {
       this.transactionsData.unshift(newTransaction);
     },
+    async loggof() {
+      await Cookie.remove("_capg-bank_token");
+      this.$router.push("/login");
+    },
+  },
+  created() {
+    this.getUserData();
   },
   components: {
     Balance,
-  },
-  mounted() {
-    this.isMounted = true;
   },
 };
 </script>
