@@ -7,7 +7,6 @@ export default {
     if (!token) {
       next('/login')
     }
-    console.log(token)
 
     next()
   }

@@ -103,9 +103,21 @@ export default {
     updateTransactionsHistory(newTransaction) {
       this.transactionsData.unshift(newTransaction);
     },
-    async loggof() {
-      await Cookie.remove("_capg-bank_token");
-      this.$router.push("/login");
+    loggof() {
+      instance
+        .post("auth/logout", null, {
+          headers: {
+            Authorization: "Bearer " + Cookie.get("_capg-bank_token"),
+          },
+        })
+        .then((response) => {
+          this.$toasted.success(response.data.message);
+          Cookie.remove("_capg-bank_token");
+          this.$router.push("/login");
+        })
+        .catch((error) => {
+          this.$toasted.error(error.response.data.message);
+        });
     },
   },
   created() {
