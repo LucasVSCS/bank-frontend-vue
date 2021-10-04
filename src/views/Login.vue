@@ -81,38 +81,14 @@
 </template>
 
 <script>
-import { required, email } from "vee-validate/dist/rules";
-import {
-  extend,
-  ValidationProvider,
-  setInteractionMode,
-  ValidationObserver,
-} from "vee-validate";
-
 import instance from "@/services/api.js";
 import Cookie from "js-cookie";
-
-setInteractionMode("eager");
-
-extend("required", {
-  ...required,
-  message: "{_field_} não pode ser vazio.",
-});
-
-extend("email", {
-  ...email,
-  message: "Preencha um e-mail válido.",
-});
 
 export default {
   beforeCreate() {
     if (Cookie.get("_capg-bank_token")) {
       this.$router.push("/");
     }
-  },
-  components: {
-    ValidationProvider,
-    ValidationObserver,
   },
   data: () => ({
     email: "",

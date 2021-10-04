@@ -3,7 +3,9 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
 import './plugins/vuetify-mask.js'
+import './helpers/validationConfig.js'
 import Toasted from 'vue-toasted'
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
 
 Vue.config.productionTip = false
 
@@ -17,6 +19,9 @@ Vue.use(Toasted, {
     }
   }
 })
+
+Vue.component('ValidationObserver', ValidationObserver)
+Vue.component('ValidationProvider', ValidationProvider)
 
 new Vue({
   vuetify,

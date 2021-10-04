@@ -16,6 +16,7 @@
 
 <script>
 import moment from "moment";
+import { formatCurrency } from "@/helpers/helpers.js";
 
 export default {
   name: "Balance",
@@ -27,8 +28,8 @@ export default {
           ...transaction,
           transaction_type_id:
             transaction.transaction_type_id == 1 ? "Depósito" : "Saque",
-          amount: this.formatCurrency(transaction.amount),
-          last_balance: this.formatCurrency(transaction.last_balance),
+          amount: formatCurrency(transaction.amount),
+          last_balance: formatCurrency(transaction.last_balance),
           postdate: moment(transaction.postdate).format("LLL"),
         }));
       } else {
@@ -46,14 +47,6 @@ export default {
         { text: "Descricão", value: "description" },
       ],
     };
-  },
-  methods: {
-    formatCurrency(amount) {
-      return new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(amount);
-    },
   },
 };
 </script>

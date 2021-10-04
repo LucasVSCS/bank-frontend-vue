@@ -19,15 +19,14 @@
 </template>
 
 <script>
+import { formatCurrency } from "@/helpers/helpers.js";
+
 export default {
   name: "Balance",
   props: ["balance"],
   computed: {
     currentBalance() {
-      return new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(this.balance);
+      return formatCurrency(this.balance);
     },
   },
 };
